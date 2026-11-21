@@ -1,0 +1,11 @@
+.env
+*.db
+target/
+.idea/
+*.iml
+.vscode/
+.venv/
+__pycache__/
+ml/data/
+*.gguf
+.DS_Store
