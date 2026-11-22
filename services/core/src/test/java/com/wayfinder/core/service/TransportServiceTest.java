@@ -25,22 +25,22 @@ import com.wayfinder.core.db.SeedData;
 import com.wayfinder.core.model.Booking;
 import com.wayfinder.core.model.BookingResult;
 import com.wayfinder.core.model.BookingResult.Reason;
-import com.wayfinder.core.model.TrainOption;
+import com.wayfinder.core.model.TransportOption;
 
-class TrainServiceTest {
+class TransportServiceTest {
     @TempDir Path tmp;
 
     Path db;
-    TrainService trains;
+    TransportService trains;
     BookingService bookings;
     long tripId;
-    TrainOption train;   // first Chennai -> Bengaluru train on day 1
+    TransportOption train;   // first Chennai -> Bengaluru train on day 1
 
     @BeforeEach
     void setUp() throws Exception {
         db = tmp.resolve("t.db");
         SeedData.build(db);
-        trains = new TrainService(db);
+        trains = new TransportService(db, TransportService.Mode.TRAIN);
         bookings = new BookingService(db);
         TripService trips = new TripService(db);
         tripId = trips.createTrip(trips.createUser("Test User"));
@@ -49,7 +49,7 @@ class TrainServiceTest {
 
     @Test
     void searchFindsTheRouteCaseInsensitively() throws Exception {
-        List<TrainOption> found = trains.search("chennai", "BENGALURU", "2026-11-22");
+        List<TransportOption> found = trains.search("chennai", "BENGALURU", "2026-11-22");
         assertEquals(2, found.size());
         assertTrue(found.get(0).dep().compareTo(found.get(1).dep()) < 0, "earliest first");
         assertTrue(trains.search("Chennai", "Bengaluru", "2030-01-01").isEmpty());

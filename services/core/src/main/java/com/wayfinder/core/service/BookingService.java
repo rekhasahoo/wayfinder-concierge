@@ -51,12 +51,17 @@ public final class BookingService {
         }
     }
 
-    private static void restoreInventory(Connection c, Booking b) throws SQLException {
+        private static void restoreInventory(Connection c, Booking b) throws SQLException {
         String[] ref = b.inventoryRef().split(":");
         switch (ref[0]) {
-            case "train" -> update(c,
-                    "UPDATE train_schedules SET seats_left = seats_left + 1 WHERE id = ?",
-                    Long.parseLong(ref[1]));
+            case "train", "flight" -> {
+                TransportService.Mode mode = TransportService.Mode.fromType(ref[0]);
+                update(c, "UPDATE " + mode.table + " SET seats_left = seats_left + 1 WHERE id = ?",
+                        Long.parseLong(ref[1]));
+            }
+            case "table" -> update(c,
+                    "UPDATE table_slots SET seats_left = seats_left + ? WHERE id = ?",
+                    Integer.parseInt(ref[2]), Long.parseLong(ref[1]));
             default -> throw new IllegalStateException(
                     "Cancel not implemented yet for booking type: " + b.type());
         }
